@@ -1,5 +1,6 @@
 import { C, serif, sans } from "../theme.js";
 import SpotOverlay from "./SpotOverlay.jsx";
+import GuideFrame from "./GuideFrame.jsx";
 import GradeBadge from "./GradeBadge.jsx";
 import MetricGauge from "./MetricGauge.jsx";
 
@@ -15,6 +16,10 @@ export default function ResultPanel({ imgSrc, result, grade, showSpots, onToggle
               style={{ width: 240, height: 240, objectFit: "cover", borderRadius: 4, border: `1px solid ${C.line}`, display: "block" }}
             />
             {showSpots && <SpotOverlay spots={result.spots} />}
+            <GuideFrame />
+          </div>
+          <div style={{ fontSize: 11, color: C.stone, marginTop: 8 }}>
+            点線の枠内が解析対象です。枠内に石が収まるように撮影してください。
           </div>
           <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10, fontSize: 12, color: C.stone, cursor: "pointer" }}>
             <input type="checkbox" checked={showSpots} onChange={(e) => onToggleSpots(e.target.checked)} />
