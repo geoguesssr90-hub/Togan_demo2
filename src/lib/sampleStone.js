@@ -12,9 +12,9 @@ export function makeSample(quality) {
   cv.width = s;
   cv.height = s;
   const ctx = cv.getContext("2d");
-  const base = quality === "high" ? 162 : quality === "mid" ? 130 : 142;
-  const noise = quality === "high" ? 10 : quality === "mid" ? 42 : 100;
-  const spots = quality === "high" ? 2 : quality === "mid" ? 38 : 80;
+  const base = quality === "high" ? 162 : quality === "mid" ? 122 : 125;
+  const noise = quality === "high" ? 10 : quality === "mid" ? 44 : 110;
+  const spots = quality === "high" ? 2 : quality === "mid" ? 64 : 80;
 
   const im = ctx.createImageData(s, s);
   for (let i = 0; i < im.data.length; i += 4) {

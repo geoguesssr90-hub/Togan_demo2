@@ -112,7 +112,9 @@ export function analyzeImage(img) {
 
   // 0–100 に正規化した3指標
   const whiteness = Math.max(0, Math.min(100, ((mean - 50) / 150) * 100));
-  const spotPenalty = Math.max(0, Math.min(100, 100 - darkRatio * 1600));
+  // 係数は実写陶石(test-images/)の暗色率 7〜12% が 20〜50点程度に収まるよう較正。
+  // ×1600 では実写のテクスチャで 0 に張り付いていた。
+  const spotPenalty = Math.max(0, Math.min(100, 100 - darkRatio * 680));
   const uniformity = Math.max(0, Math.min(100, 100 - (std / 60) * 100));
 
   const score = Math.round(whiteness * 0.45 + spotPenalty * 0.3 + uniformity * 0.25);
@@ -131,5 +133,11 @@ export function analyzeImage(img) {
       { label: "斑点評価", note: "暗色画素(鉄分等の目安)", value: Math.round(spotPenalty) },
       { label: "均一性", note: "輝度分散から推定", value: Math.round(uniformity) },
     ],
+    // 閾値較正用の生統計(UI では未使用。scripts/analyze-images.mjs が参照)
+    raw: {
+      mean: +mean.toFixed(1),
+      std: +std.toFixed(1),
+      darkRatio: +(darkRatio * 100).toFixed(2),
+    },
   };
 }
