@@ -96,7 +96,9 @@ export function analyzeImage(img) {
 
   // 暗色判定の閾値。白色度の基準緩和(下記)で明るい石の判別が斑点・均一性に
   // 寄るため、旧設定(mean-55 / x900 / std÷80)から感度を強めている。
-  const darkThreshold = mean - 50;
+  // mean-50 では薄い斑点のコア輝度が閾値を僅かに上回り検出漏れするため mean-40 に調整。
+  // ノイズ由来の孤立暗点は findSpots 側の最小サイズ条件(2画素以上)で除外される。
+  const darkThreshold = mean - 40;
 
   let varSum = 0;
   let dark = 0;
