@@ -2,7 +2,8 @@ export default function SpotOverlay({ spots }) {
   return (
     <div style={{ position: "absolute", inset: 0, borderRadius: 4, overflow: "hidden", pointerEvents: "none" }}>
       {spots.map((s, i) => {
-        const d = Math.max(7, s.rPct * 2 * 240);
+        // 直径は表示領域に対する割合で指定し、小さすぎる斑点は 7px を下限に確保
+        const d = `max(7px, ${s.rPct * 2 * 100}%)`;
         return (
           <div
             key={i}

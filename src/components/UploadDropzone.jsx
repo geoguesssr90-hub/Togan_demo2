@@ -10,7 +10,16 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
   return (
     <section>
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="陶石の画像を選択"
         onClick={() => fileRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            fileRef.current?.click();
+          }
+        }}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
