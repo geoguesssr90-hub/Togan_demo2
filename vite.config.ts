@@ -1,7 +1,41 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      // アプリは完全にクライアントサイドで動くため、
+      // ビルド成果物とアイコンをプリキャッシュすればオフラインで起動・判定できる
+      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      manifest: {
+        name: '陶眼 TŌGAN — 天草陶石 AI選鉱システム',
+        short_name: '陶眼',
+        description: '陶石の写真から白色度・斑点・均一性を解析し等級を推定するデモアプリ',
+        lang: 'ja',
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#F7F6F1',
+        theme_color: '#F7F6F1',
+        icons: [
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          {
+            src: 'icons/icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png}'],
+        // SPA なので未知のパスは index.html にフォールバック
+        navigateFallback: 'index.html',
+      },
+    }),
+  ],
 })
