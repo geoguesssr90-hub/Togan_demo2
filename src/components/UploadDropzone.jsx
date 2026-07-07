@@ -7,6 +7,8 @@ const SAMPLES = [
   { q: "low", label: "低品位サンプル" },
 ];
 
+// 配色・:active フィードバックはクラス側(下の <style>)で定義。
+// インラインだと :active で上書きできないため。
 const buttonBase = {
   fontFamily: sans,
   fontSize: 14,
@@ -17,7 +19,7 @@ const buttonBase = {
 };
 
 export default function UploadDropzone({ fileRef, onFile, onSample }) {
-  // タッチデバイス判定(カメラ撮影ボタンの表示切り替え)
+  // タッチデバイス判定(カメラボタンの表示と、ゾーンクリック挙動の切り替え)
   const [isTouch] = useState(
     () => window.matchMedia?.("(pointer: coarse)").matches ?? false
   );
@@ -25,8 +27,17 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
 
   return (
     <section>
+      <style>{`
+        .dz-btn { -webkit-tap-highlight-color: transparent; }
+        .dz-btn-fill { background: ${C.gosu}; color: #fff; border: none; }
+        .dz-btn-fill:active { background: ${C.gosuDeep}; }
+        .dz-btn-line { background: ${C.card}; color: ${C.gosu}; border: 1px solid ${C.gosu}; }
+        .dz-btn-line:active { background: rgba(35, 80, 143, 0.12); color: ${C.gosuDeep}; border-color: ${C.gosuDeep}; }
+      `}</style>
       <div
-        onClick={() => fileRef.current?.click()}
+        // ゾーン全体クリックでの選択は PC(pointer: fine)のみ。
+        // タッチではボタン2つだけを操作対象にする
+        onClick={isTouch ? undefined : () => fileRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -38,7 +49,8 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
           background: C.card,
           padding: "40px 24px",
           textAlign: "center",
-          cursor: "pointer",
+          cursor: isTouch ? "default" : "pointer",
+          WebkitTapHighlightColor: "transparent",
         }}
       >
         <div style={{ fontFamily: serif, fontSize: 17, letterSpacing: "0.1em", color: C.gosu, marginBottom: 6 }}>
@@ -55,21 +67,23 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
         >
           {isTouch && (
             <button
+              className="dz-btn dz-btn-fill"
               onClick={(e) => {
                 e.stopPropagation();
                 cameraRef.current?.click();
               }}
-              style={{ ...buttonBase, background: C.gosu, color: "#fff", border: "none" }}
+              style={buttonBase}
             >
               カメラで撮影
             </button>
           )}
           <button
+            className="dz-btn dz-btn-line"
             onClick={(e) => {
               e.stopPropagation();
               fileRef.current?.click();
             }}
-            style={{ ...buttonBase, background: C.card, color: C.gosu, border: `1px solid ${C.gosu}` }}
+            style={buttonBase}
           >
             画像を選択
           </button>
