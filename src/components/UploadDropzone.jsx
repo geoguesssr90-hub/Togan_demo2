@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import { C, serif, sans } from "../theme.js";
 
 const SAMPLES = [
@@ -6,20 +7,26 @@ const SAMPLES = [
   { q: "low", label: "低品位サンプル" },
 ];
 
+const buttonBase = {
+  fontFamily: sans,
+  fontSize: 14,
+  padding: "12px 28px",
+  borderRadius: 3,
+  cursor: "pointer",
+  minWidth: 200,
+};
+
 export default function UploadDropzone({ fileRef, onFile, onSample }) {
+  // タッチデバイス判定(カメラ撮影ボタンの表示切り替え)
+  const [isTouch] = useState(
+    () => window.matchMedia?.("(pointer: coarse)").matches ?? false
+  );
+  const cameraRef = useRef(null);
+
   return (
     <section>
       <div
-        role="button"
-        tabIndex={0}
-        aria-label="陶石の画像を選択"
         onClick={() => fileRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            fileRef.current?.click();
-          }
-        }}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -29,7 +36,7 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
           border: `1.5px dashed ${C.gosu}`,
           borderRadius: 4,
           background: C.card,
-          padding: "56px 24px",
+          padding: "40px 24px",
           textAlign: "center",
           cursor: "pointer",
         }}
@@ -37,13 +44,58 @@ export default function UploadDropzone({ fileRef, onFile, onSample }) {
         <div style={{ fontFamily: serif, fontSize: 17, letterSpacing: "0.1em", color: C.gosu, marginBottom: 6 }}>
           陶石の画像を選択
         </div>
-        <div style={{ fontSize: 12, color: C.stone }}>クリックして選択、またはここにドラッグ</div>
+        {!isTouch && (
+          <div style={{ fontSize: 12, color: C.stone, marginBottom: 18 }}>
+            クリックして選択、またはここにドラッグ
+          </div>
+        )}
+
+        <div
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginTop: isTouch ? 18 : 0 }}
+        >
+          {isTouch && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                cameraRef.current?.click();
+              }}
+              style={{ ...buttonBase, background: C.gosu, color: "#fff", border: "none" }}
+            >
+              カメラで撮影
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              fileRef.current?.click();
+            }}
+            style={{ ...buttonBase, background: C.card, color: C.gosu, border: `1px solid ${C.gosu}` }}
+          >
+            画像を選択
+          </button>
+        </div>
+
+        {/* 隠しinputへのプログラム的クリックがゾーンの onClick に伝播すると
+            ファイル選択が二重に開くため、伝播を止める */}
         <input
           ref={fileRef}
           type="file"
           accept="image/*"
           style={{ display: "none" }}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => onFile(e.target.files?.[0])}
+        />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: "none" }}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            onFile(e.target.files?.[0]);
+            e.target.value = ""; // 同じ操作の連続撮影でも change が発火するように
+          }}
         />
       </div>
 
