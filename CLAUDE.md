@@ -22,6 +22,8 @@
 - 合成サンプル(src/lib/sampleStone.js)は4等級すべてをデモで提示できるよう
   意図的に調整されている(高品位=特級 / 中品位=一級・二級の境界 / 低品位=規格外)。
   判定ロジック側を変えた場合はサンプル側の再較正も必要
+- LINE内蔵ブラウザではカメラ起動不可(LINE側仕様)。
+  共有時は URL に `?openExternalBrowser=1` を付ける運用で回避する
 
 ## 開発ルール
 - コミットメッセージは英語(Conventional Commits形式: feat/fix/refactor/...)
